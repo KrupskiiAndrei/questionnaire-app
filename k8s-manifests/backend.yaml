@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: questionnaire-backend
+  labels:
+    app: questionnaire-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: questionnaire-backend
+  template:
+    metadata:
+      labels:
+        app: questionnaire-backend
+    spec:
+      containers:
+      - name: questionnaire-backend
+        image: ghcr.io/krupskiiandrei/questionnaire-backend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: MONGO_URI
+          value: "mongodb://mongo:27017/questionnaire"
+      imagePullSecrets:
+      - name: ghcr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: questionnaire-backend
+  labels:
+    app: questionnaire-backend
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: questionnaire-backend
+  type: ClusterIP
